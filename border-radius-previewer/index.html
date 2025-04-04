@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Border Radius Previewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        .preview-box {
+            width: 200px;
+            height: 200px;
+            background-color: #4caf50;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .controls label {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+        }
+
+        .copy-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .copy-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-box" id="previewBox"></div>
+
+    <div class="controls">
+        <label>
+            Top-Left:
+            <input type="number" id="topLeft" value="0" min="0" max="100"> px
+        </label>
+        <label>
+            Top-Right:
+            <input type="number" id="topRight" value="0" min="0" max="100"> px
+        </label>
+        <label>
+            Bottom-Left:
+            <input type="number" id="bottomLeft" value="0" min="0" max="100"> px
+        </label>
+        <label>
+            Bottom-Right:
+            <input type="number" id="bottomRight" value="0" min="0" max="100"> px
+        </label>
+    </div>
+
+    <button class="copy-button" id="copyButton">Copy CSS</button>
+
+    <script>
+        const previewBox = document.getElementById('previewBox');
+        const topLeft = document.getElementById('topLeft');
+        const topRight = document.getElementById('topRight');
+        const bottomLeft = document.getElementById('bottomLeft');
+        const bottomRight = document.getElementById('bottomRight');
+        const copyButton = document.getElementById('copyButton');
+
+        function updateBorderRadius() {
+            const borderRadius = `${topLeft.value}px ${topRight.value}px ${bottomRight.value}px ${bottomLeft.value}px`;
+            previewBox.style.borderRadius = borderRadius;
+        }
+
+        function copyToClipboard() {
+            const cssText = `border-radius: ${topLeft.value}px ${topRight.value}px ${bottomRight.value}px ${bottomLeft.value}px;`;
+            navigator.clipboard.writeText(cssText).then(() => {
+                alert('CSS copied to clipboard!');
+            });
+        }
+
+        topLeft.addEventListener('input', updateBorderRadius);
+        topRight.addEventListener('input', updateBorderRadius);
+        bottomLeft.addEventListener('input', updateBorderRadius);
+        bottomRight.addEventListener('input', updateBorderRadius);
+        copyButton.addEventListener('click', copyToClipboard);
+
+        // Initialize the preview box with default values
+        updateBorderRadius();
+    </script>
+</body>
+</html>
