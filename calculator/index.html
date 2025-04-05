@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .calculator {
+            width: 300px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        .display {
+            background: #222;
+            color: #fff;
+            font-size: 2rem;
+            text-align: right;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 20px;
+            background: #f4f4f4;
+        }
+        .btn {
+            font-size: 1.5rem;
+            padding: 20px;
+            background: #ddd;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn:active {
+            background: #bbb;
+        }
+        .zero {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="btn">AC</button>
+            <button class="btn">C</button>
+            <button class="btn">/</button>
+            <button class="btn">7</button>
+            <button class="btn">8</button>
+            <button class="btn">9</button>
+            <button class="btn">*</button>
+            <button class="btn">4</button>
+            <button class="btn">5</button>
+            <button class="btn">6</button>
+            <button class="btn">-</button>
+            <button class="btn">1</button>
+            <button class="btn">2</button>
+            <button class="btn">3</button>
+            <button class="btn">+</button>
+            <button class="btn zero">0</button>
+            <button class="btn">=</button>
+            <button class="btn">+/-</button>
+            <button class="btn">.</button>
+        </div>
+    </div>
+    <script>
+        const display = document.getElementById('display');
+        const buttons = document.querySelectorAll('.btn');
+
+        let currentInput = '';
+        let firstOperand = null;
+        let operator = null;
+        let resetDisplay = false;
+        let lastInputWasOperator = false;
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const value = button.textContent;
+
+                if (!isNaN(value)) { // If the button is a digit
+                    if (resetDisplay) {
+                        currentInput = '';
+                        resetDisplay = false;
+                    }
+                    if (currentInput.length < 8) {
+                        currentInput += value;
+                        display.textContent = currentInput;
+                    }
+                    lastInputWasOperator = false;
+                } else if (value === 'AC') {
+                    currentInput = '';
+                    firstOperand = null;
+                    operator = null;
+                    display.textContent = '0';
+                    resetDisplay = false;
+                    lastInputWasOperator = false;
+                } else if (value === 'C') {
+                    if (lastInputWasOperator) {
+                        operator = null;
+                        display.textContent = formatResult(firstOperand);
+                    } else {
+                        currentInput = currentInput.slice(0, -1);
+                        display.textContent = currentInput || '0';
+                    }
+                    lastInputWasOperator = false;
+                } else if (['+', '-', '*', '/'].includes(value)) {
+                    if (firstOperand === null) {
+                        firstOperand = parseFloat(currentInput);
+                    } else if (operator) {
+                        firstOperand = calculate(firstOperand, parseFloat(currentInput), operator);
+                        display.textContent = formatResult(firstOperand);
+                    }
+                    operator = value;
+                    resetDisplay = true;
+                    lastInputWasOperator = true;
+                } else if (value === '=') {
+                    if (operator && firstOperand !== null) {
+                        firstOperand = calculate(firstOperand, parseFloat(currentInput), operator);
+                        display.textContent = formatResult(firstOperand);
+                        operator = null;
+                        resetDisplay = true;
+                    }
+                    lastInputWasOperator = false;
+                } else if (value === '+/-') {
+                    if (currentInput) {
+                        currentInput = (parseFloat(currentInput) * -1).toString();
+                        display.textContent = currentInput;
+                    }
+                } else if (value === '.') {
+                    if (!currentInput.includes('.') && currentInput.length < 8) {
+                        currentInput += '.';
+                        display.textContent = currentInput;
+                    }
+                }
+            });
+        });
+
+        function calculate(a, b, op) {
+            switch (op) {
+                case '+': return parseFloat((a + b).toFixed(3));
+                case '-': return parseFloat((a - b).toFixed(3));
+                case '*': return parseFloat((a * b).toFixed(3));
+                case '/': return b !== 0 ? parseFloat((a / b).toFixed(3)) : 'ERR';
+                default: return b;
+            }
+        }
+
+        function formatResult(result) {
+            if (result === 'ERR' || result.toString().length <= 8) {
+                return result;
+            }
+            return 'ERR';
+        }
+    </script>
+</body>
+</html>
